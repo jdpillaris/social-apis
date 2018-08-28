@@ -37,21 +37,15 @@ func GetEngine() *gin.Engine {
 	// Register api end-points
 	v1 := r.Group("/v1")
 	{
-		user := new(controllers.User)
-		v1.GET("/friends", user.GetFriends)
-		v1.GET("/followers", user.GetFollowers)
-		
-		// network := new(controllers.Network)
-		// v1.POST("/connect", network.Connect) 
-		// v1.POST("/subscribe", network.Subscribe)
-		// v1.POST("/block", network.Block)
-		// v1.GET("/mutual-friends", network.GetMutualFriends)
+		person := new(controllers.Person)
+		v1.GET("/friends", person.GetFriends)
+		v1.GET("/followers", person.GetFollowers)
 
-		connection := new(controllers.Connection)
-		v1.POST("/connect", connection.Connect) 
-		v1.POST("/subscribe", connection.Subscribe)
-		v1.POST("/block", connection.Block)
-		v1.GET("/mutual-friends", connection.GetMutualFriends)
+		relationship := new(controllers.Relationship)
+		v1.POST("/connect", relationship.Connect) 
+		v1.POST("/subscribe", relationship.Subscribe)
+		v1.POST("/block", relationship.Block)
+		v1.GET("/mutual-friends", relationship.GetMutualFriends)
 	}
 
 	return r
