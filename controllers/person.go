@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,10 +12,10 @@ type Person struct {
 
 // getFriends returns all friends of a person
 func (b *Person) GetFriends(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"token": ""})
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
 // getFollowers returns all subscribers of a person
 func (b *Person) GetFollowers(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"token": ""})
+	c.JSON(http.StatusOK, gin.H{"success": true})
 }
