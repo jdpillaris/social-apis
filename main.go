@@ -1,6 +1,7 @@
 package main
 
 import (
+	"app/models"
 	"app/routes"
 	"os"
 
@@ -12,6 +13,9 @@ import (
 
 func init() {
 	log.SetHandler(text.New(os.Stderr))
+
+	// Connect to DB
+	models.Connect()
 
 	// Configure gin run mode
 	gin.SetMode(gin.ReleaseMode)
