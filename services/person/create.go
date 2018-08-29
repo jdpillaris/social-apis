@@ -21,6 +21,11 @@ func NewPerson(email string) *CreatePerson {
 	return n
 }
 
+// Data returns the new person
+func (p *CreatePerson) Data() *models.Person {
+	return p.person
+}
+
 // Do will validate data and create a person
 func (p *CreatePerson) Do() (err error) {
 	if err = p.validate(); err != nil {
@@ -34,6 +39,7 @@ func (p *CreatePerson) Do() (err error) {
 	return nil
 }
 
+//validate person email
 func (p *CreatePerson) validate() (err error) {
 	return nil
 }

@@ -1,7 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"time"
+
+	"github.com/apex/log"
 )
 
 // Relationship model
@@ -17,6 +20,32 @@ type Relationship struct {
 
 // Create a relationship
 func (r *Relationship) Create() (*Relationship, error) {
+	fmt.Println(r.CreatedAt)
+	stmt, err := GetDB().Prepare(`
+        INSERT INTO Relationships(person_1, person_2, is_friends, follows, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+	`)
+	if err != nil {
+		log.WithError(err).Error("Failed to insert/update person")
+		return r, err
+	}
+
+	row, err := stmt.Exec(
+		r.Person1,
+		r.Person2,
+		r.IsFriends,
+		r.Follows,
+		r.CreatedAt,
+		r.CreatedAt,
+	)
+	if err != nil {
+		log.WithError(err).Error("Failed to insert/update person")
+		return r, err
+	}
+
+	rowID, _ := row.LastInsertId()
+	r.ID = rowID
+
 	return r, nil
 }
 

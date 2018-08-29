@@ -1,6 +1,7 @@
 package relationship
 
 import (
+	"app/services/person"
 	"app/models"
 	"time"
 
@@ -31,26 +32,48 @@ func NewRelationship(email1, email2 string, is_friends, follows bool) *CreateRel
 
 // Do will validate data and create a relationship
 func (r *CreateRelationship) Do() (err error) {
+	var person1_id, person2_id int64
+	if person1_id, person2_id, err = r.createPersons(); err != nil {
+		return err
+	}
+
 	if err = r.validate(); err != nil {
 		return err
 	}
 
-	if err = r.create(); err != nil {
+	if err = r.create(person1_id, person2_id); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+//validate function validates the relationship attributes 
 func (r *CreateRelationship) validate() (err error) {
 	return nil
 }
 
+func (r *CreateRelationship) createPersons() (person1_id, person2_id int64, err error) {	
+	personService := person.NewPerson(r.email1)
+	if err = personService.Do(); err != nil {
+		return person1_id, person2_id, err
+	}
+	person1_id = personService.Data().ID
+
+	personService = person.NewPerson(r.email2)
+	if err = personService.Do(); err != nil {
+		return person1_id, person2_id, err
+	}
+	person2_id = personService.Data().ID
+
+	return person1_id, person2_id, nil
+}
+
 // Create a record
-func (r *CreateRelationship) create() (err error) {
+func (r *CreateRelationship) create(person1_id, person2_id int64) (err error) {
 	relationship := new(models.Relationship)
-	relationship.Person1 = 1
-	relationship.Person2 = 2
+	relationship.Person1 = person1_id
+	relationship.Person2 = person2_id
 	relationship.IsFriends = r.is_friends
 	relationship.Follows = r.follows
 	relationship.CreatedAt = time.Now().UTC()
