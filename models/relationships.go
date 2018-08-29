@@ -39,6 +39,20 @@ func (r *Relationship) GetAllFollowers(UID int64) ([]Relationship, error) {
 	return rs, nil
 }
 
+// GetAll followers
+func (r *Relationship) GetAll(UID int64) ([]Relationship, error) {
+	rs := make([]Relationship, 0)
+
+	return rs, nil
+}
+
+// Get information on a specific relationship based on ID
+func (r *Relationship) Get(id int64) (Relationship, error) {
+	var relation Relationship
+
+	return relation, nil
+}
+
 // Delete a specific relationship based on person_1, person_2 IDs
 func (r *Relationship) Delete(person_1, person_2 int64) error {
 	return nil
