@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"app/models"
 	"app/routes"
 	"os"
@@ -8,7 +9,6 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/text"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 func init() {
@@ -23,7 +23,8 @@ func init() {
 
 func main() {
 	// Start HTTP server
-	err := routes.GetEngine().Run(":" + viper.GetString("app.port"))
+	err := routes.GetEngine().Run(":" + "8080")
+
 	if err != nil {
 		log.WithError(err).Error("gin error")
 	}

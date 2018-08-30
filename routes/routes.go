@@ -3,6 +3,9 @@ package routes
 import (
 	"app/controllers"
 	"app/middlewares"
+	"net/http"
+
+	"github.com/google/uuid"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -49,6 +52,22 @@ func GetEngine() *gin.Engine {
 		v1.POST("/block", relationship.Block)
 		v1.GET("/mutual-friends", relationship.GetMutualFriends)
 	}
+
+	// AppEngine health check
+	r.GET("/liveness_check", (func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"ok": true})
+	}))
+	r.GET("/readiness_check", (func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"ok": true})
+	}))
+
+	r.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"error": gin.H{
+			"message": "404 page not found",
+			"code":    "404001",
+			"trace":   uuid.New().String(),
+		}})
+	})
 
 	return r
 }
