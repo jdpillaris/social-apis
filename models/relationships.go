@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -12,6 +13,8 @@ type Relationship struct {
 	ID         int64     `json:"id"`
 	Person1    int64     `json:"person_1"`
 	Person2    int64     `json:"person_2"`
+	Email1     string    `json:"email_1"`
+	Email2     string    `json:"email_2"`
 	IsFriends  bool    	 `json:"is_friends"`
 	Follows    bool    	 `json:"follows"`
 	CreatedAt  time.Time `json:"created_at"`
@@ -55,21 +58,164 @@ func (r *Relationship) Update(id int64) (*Relationship, error) {
 }
 
 // GetAll friends
-func (r *Relationship) GetAllFriends(UID int64) ([]Relationship, error) {
+func (r *Relationship) GetAllFriends(email string) ([]Relationship, error) {
 	rs := make([]Relationship, 0)
+	rows, err := GetDB().Query(
+		`SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
+		r.is_friends, r.follows, r.created_at, r.updated_at
+		FROM Relationships AS r
+		JOIN Persons AS p2
+		JOIN Persons AS p1
+		ON r.person_2 = p2.id
+		ON r.person_1 = p1.id
+		WHERE p2.email = ? AND
+		r.is_friends = 1`,
+		email,
+	)
+	if err != nil {
+		log.WithError(err).Error("Failed to fetch friends")
+		return rs, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var relationship Relationship
+		err := rows.Scan(
+			&relationship.ID,
+			&relationship.Person1,
+			&relationship.Person2,
+			&relationship.Email1,
+			&relationship.Email2,
+			&relationship.IsFriends,
+			&relationship.Follows,
+			&relationship.CreatedAt,
+			&relationship.UpdatedAt,
+		)
+		if err != nil {
+			log.WithError(err).Error("Failed to get friendships by email")
+			return rs, err
+		}
+		rs = append(rs, relationship)
+	}
+	err = rows.Err()
+	if err != nil && err != sql.ErrNoRows {
+		log.WithError(err).Error("Friendships by email row error")
+		return rs, err
+	}
 
 	return rs, nil
 }
 
 // GetAll followers
-func (r *Relationship) GetAllFollowers(UID int64) ([]Relationship, error) {
+func (r *Relationship) GetAllFollowers(email string) ([]Relationship, error) {
 	rs := make([]Relationship, 0)
+	rows, err := GetDB().Query(
+		`SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
+		r.is_friends, r.follows, r.created_at, r.updated_at
+		FROM Relationships AS r
+		JOIN Persons AS p2
+		JOIN Persons AS p1
+		ON r.person_2 = p2.id
+		ON r.person_1 = p1.id
+		WHERE p2.email = ? AND
+		r.follows = 1`,
+		email,
+	)
+	if err != nil {
+		log.WithError(err).Error("Failed to fetch followers")
+		return rs, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var relationship Relationship
+		err := rows.Scan(
+			&relationship.ID,
+			&relationship.Person1,
+			&relationship.Person2,
+			&relationship.Email1,
+			&relationship.Email2,
+			&relationship.IsFriends,
+			&relationship.Follows,
+			&relationship.CreatedAt,
+			&relationship.UpdatedAt,
+		)
+		if err != nil {
+			log.WithError(err).Error("Failed to get followers by email")
+			return rs, err
+		}
+		rs = append(rs, relationship)
+	}
+	err = rows.Err()
+	if err != nil && err != sql.ErrNoRows {
+		log.WithError(err).Error("Followers by email row error")
+		return rs, err
+	}
 
 	return rs, nil
 }
 
-// GetAll followers
-func (r *Relationship) GetAll(UID int64) ([]Relationship, error) {
+// GetMutualFriends friends
+func (r *Relationship) GetMutualFriends(email1, email2 string) ([]Relationship, error) {
+	rs := make([]Relationship, 0)
+	rows, err := GetDB().Query(
+		`
+		SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
+		r.is_friends, r.follows, r.created_at, r.updated_at
+		FROM Relationships AS r
+		JOIN Persons AS p2
+		JOIN Persons AS p1
+		ON r.person_2 = p2.id
+		ON r.person_1 = p1.id
+		WHERE p2.email = ? AND
+		r.is_friends = 1
+		UNION ALL
+		SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
+		r.is_friends, r.follows, r.created_at, r.updated_at
+		FROM Relationships AS r
+		JOIN Persons AS p2
+		JOIN Persons AS p1
+		ON r.person_2 = p2.id
+		ON r.person_1 = p1.id
+		WHERE p2.email = ? AND
+		r.is_friends = 1
+		`,
+		email1,
+		email2,
+	)
+	if err != nil {
+		log.WithError(err).Error("Failed to fetch mutual friends")
+		return rs, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var relationship Relationship
+		err := rows.Scan(
+			&relationship.ID,
+			&relationship.Person1,
+			&relationship.Person2,
+			&relationship.Email1,
+			&relationship.Email2,
+			&relationship.IsFriends,
+			&relationship.Follows,
+			&relationship.CreatedAt,
+			&relationship.UpdatedAt,
+		)
+		if err != nil {
+			log.WithError(err).Error("Failed to get mutual friends")
+			return rs, err
+		}
+		rs = append(rs, relationship)
+	}
+	err = rows.Err()
+	if err != nil && err != sql.ErrNoRows {
+		log.WithError(err).Error("Mutual friends row error")
+		return rs, err
+	}
+
+	return rs, nil
+}
+
+// GetAll relationships
+func (r *Relationship) GetAll(emailID string) ([]Relationship, error) {
 	rs := make([]Relationship, 0)
 
 	return rs, nil

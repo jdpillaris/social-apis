@@ -9,37 +9,49 @@ import (
 
 // GetRelationships service
 type GetRelationships struct {
-	person1_ID  int64
-	person2_ID  int64
+	// person1_ID   int64
+	// person2_ID   int64
+	email1   	 string
+	email2   	 string
 	relationships []models.Relationship
 }
 
 // GetAllRelationships instance
-func GetAllRelationships(personID int64) *GetRelationships {
+func GetAllRelationships(email2 string) *GetRelationships {
 	n := new(GetRelationships)
-	n.person1_ID = 1
+	n.email2 = email2
 	return n
 }
 
 // GetFriends returns all friend relationships
-func GetFriends(emailID string) *GetRelationships {
-	n := new(GetRelationships)
-	n.person1_ID = 1
-	return n
+func (r *GetRelationships) GetFriends(emailID string) (err error) {
+	r.relationships, err = new(models.Relationship).GetAllFriends(emailID)
+	if err != nil {
+		err = errors.New("Unable to fetch friends")
+		log.Info(err.Error())
+		return err
+	}
+
+	return nil
 }
 
 // GetFriends returns all subscriber relationships
-func GetFollowers(emailID string) *GetRelationships {
-	n := new(GetRelationships)
-	n.person1_ID = 1
-	return n
+func (r *GetRelationships) GetFollowers(emailID string) (err error) {
+	r.relationships, err = new(models.Relationship).GetAllFollowers(emailID)
+	if err != nil {
+		err = errors.New("Unable to fetch followers")
+		log.Info(err.Error())
+		return err
+	}
+
+	return nil
 }
 
 // GetFriends returns all mutual friend relationships
 func GetMutualFriends(email1, email2 string) *GetRelationships {
 	n := new(GetRelationships)
-	n.person1_ID = 1
-	n.person2_ID = 2
+	n.email1 = email1
+	n.email2 = email2
 	return n
 }
 
@@ -58,7 +70,7 @@ func (r *GetRelationships) Do() (err error) {
 }
 
 func (r *GetRelationships) getAllRelationships() (err error) {
-	r.relationships, err = new(models.Relationship).GetAll(r.person1_ID)
+	r.relationships, err = new(models.Relationship).GetAll(r.email1)
 	if err != nil {
 		err = errors.New("Unable to fetch relationships")
 		log.Info(err.Error())

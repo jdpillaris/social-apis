@@ -19,15 +19,6 @@ func (b *Relationship) Connect(c *gin.Context) {
 	email_2 := "person2@domain.com"
 
 	// personService := person.NewPerson(email_1)
-	// if err = personService.Do(); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"success": false})
-	// 	return
-	// }
-	// personService = person.NewPerson(email_2)
-	// if err = personService.Do(); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"success": false})
-	// 	return
-	// }
 
 	relationshipService := relationship.NewRelationship(email_1, email_2, true, true)
 	if err = relationshipService.Do(); err != nil {
@@ -71,9 +62,10 @@ func (b *Relationship) Block(c *gin.Context) {
 // getFriends returns all friends of a person
 func (b *Relationship) GetFriends(c *gin.Context) {
 	email := "someone@domain.com"
-	s := relationship.GetFriends(email)
+	s := relationship.GetAllRelationships(email)
+	// s := relationship.GetFriends(email)
 
-	if err := s.Do(); err != nil {
+	if err := s.GetFriends(email); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false})
 		return
 	}
@@ -81,12 +73,12 @@ func (b *Relationship) GetFriends(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true})
 }
 
-// // getFollowers returns all subscribers of a person
+// getFollowers returns all subscribers of a person
 func (b *Relationship) GetFollowers(c *gin.Context) {
 	email := "someone@domain.com"
-	s := relationship.GetFollowers(email)
+	s := relationship.GetAllRelationships(email)
 
-	if err := s.Do(); err != nil {
+	if err := s.GetFollowers(email); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false})
 		return
 	}
