@@ -44,7 +44,7 @@ func (r *CreateRelationship) Do() (err error) {
 	if err = r.create(person1_id, person2_id); err != nil {
 		return err
 	}
-	//For friendship, add extra record - since it is a symmetrical relationship
+	// For friendship, add extra record - since it is a symmetrical relationship
 	if r.is_friends {
 		if err = r.create(person2_id, person1_id); err != nil {
 			return err

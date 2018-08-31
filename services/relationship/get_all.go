@@ -60,6 +60,16 @@ func (r *GetRelationships) Data() []models.Relationship {
 	return r.relationships
 }
 
+// Data returns connected emails from all returned relationships
+func (r *GetRelationships) ConnectedList() []string {
+	list := make([]string, 0)
+	for _, elem := range r.relationships {
+		list = append(list, elem.Email1)
+	}
+
+	return list
+}
+
 // Do tasks
 func (r *GetRelationships) Do() (err error) {
 	if err = r.getAllRelationships(); err != nil {
