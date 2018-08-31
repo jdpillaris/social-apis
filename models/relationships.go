@@ -25,11 +25,11 @@ type Relationship struct {
 func (r *Relationship) Create() (*Relationship, error) {
 	fmt.Println(r.CreatedAt)
 	stmt, err := GetDB().Prepare(`
-        INSERT INTO Relationships(person_1, person_2, is_friends, follows, created_at, updated_at)
+        INSERT INTO Relationships(person_1, person_2, is_friend, follows, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?)
 	`)
 	if err != nil {
-		log.WithError(err).Error("Failed to insert/update person")
+		log.WithError(err).Error("Failed to insert relationship")
 		return r, err
 	}
 
@@ -42,7 +42,7 @@ func (r *Relationship) Create() (*Relationship, error) {
 		r.CreatedAt,
 	)
 	if err != nil {
-		log.WithError(err).Error("Failed to insert/update person")
+		log.WithError(err).Error("Failed to insert relationship")
 		return r, err
 	}
 
