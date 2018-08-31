@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"app/models"
 	"app/routes"
 	"os"

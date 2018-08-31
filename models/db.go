@@ -19,7 +19,7 @@ func Connect() {
 	/*
 	 * MySQL client
 	 */
-	db, err = sql.Open("mysql", "social_admin:Pa$$w0rd@/social_network")
+	db, err = sql.Open("mysql", "social_admin:Pa$$w0rd@/social_network?parseTime=true")
 	if err != nil {
 		log.WithError(err).Fatal("error connecting to DB")
 	}
