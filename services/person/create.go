@@ -49,6 +49,7 @@ func (p *CreatePerson) create() (err error) {
 	person := new(models.Person)
 	person.Email = p.email
 	person.CreatedAt = time.Now().UTC()
+	person.UpdatedAt = time.Now().UTC()
 	p.person, err = person.Create()
 	if err != nil {
 		log.WithError(err).Error("Unable to add person")

@@ -12,14 +12,16 @@ type Person struct {
 	ID         int64     `json:"id"`
 	Email      string    `json:"email"`
 	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 // Create a person
 func (p *Person) Create() (*Person, error) {
 	fmt.Println(p.CreatedAt)
 	stmt, err := GetDB().Prepare(`
-        INSERT IGNORE INTO Persons(email, created_at)
-        VALUES (?, ?)
+        INSERT INTO Persons(email, created_at, updated_at)
+		VALUES (?, ?, ?)
+		ON DUPLICATE KEY UPDATE updated_at = ?
 	`)
 	if err != nil {
 		log.WithError(err).Error("Failed to create person")
@@ -29,6 +31,8 @@ func (p *Person) Create() (*Person, error) {
 	row, err := stmt.Exec(
 		p.Email,
 		p.CreatedAt,
+		p.UpdatedAt,
+		p.UpdatedAt,
 	)
 	if err != nil {
 		log.WithError(err).Error("Failed to insert person")
