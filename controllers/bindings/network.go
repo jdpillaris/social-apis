@@ -2,7 +2,7 @@ package bindings
 
 // PersonPair binding
 type PersonPair struct {
-	PersonPair []string `json:"person_pair"`
+	PersonPair []string `json:"friends" binding:"required"`
 }
 
 // Request binding
@@ -18,6 +18,6 @@ type GetFriends struct {
 
 // GetFollowers binding
 type GetFollowers struct {
-	Email string `json:"email"`
-	Post  string `json:"update"`
+	Email string `json:"sender"`
+	Post  string `json:"text"`
 }
