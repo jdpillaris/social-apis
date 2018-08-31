@@ -117,7 +117,7 @@ func (r *Relationship) GetAllFollowers(email string) ([]Relationship, error) {
 		email,
 	)
 	if err != nil {
-		log.WithError(err).Error("Failed to fetch followers")
+		log.WithError(err).Error("Failed to fetch recipients")
 		return rs, err
 	}
 	defer rows.Close()
@@ -135,14 +135,14 @@ func (r *Relationship) GetAllFollowers(email string) ([]Relationship, error) {
 			&relationship.UpdatedAt,
 		)
 		if err != nil {
-			log.WithError(err).Error("Failed to get followers by email")
+			log.WithError(err).Error("Failed to get recipients by email")
 			return rs, err
 		}
 		rs = append(rs, relationship)
 	}
 	err = rows.Err()
 	if err != nil && err != sql.ErrNoRows {
-		log.WithError(err).Error("Followers by email row error")
+		log.WithError(err).Error("Recipients by email row error")
 		return rs, err
 	}
 
@@ -153,23 +153,21 @@ func (r *Relationship) GetAllFollowers(email string) ([]Relationship, error) {
 func (r *Relationship) GetMutualFriends(email1, email2 string) ([]Relationship, error) {
 	rs := make([]Relationship, 0)
 	rows, err := GetDB().Query(
-		`
-		SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
+		`SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
 		r.is_friend, r.follows, r.created_at, r.updated_at
 		FROM Relationships AS r
 		JOIN Persons AS p2 ON r.person_2 = p2.id
 		JOIN Persons AS p1 ON r.person_1 = p1.id
 		WHERE p2.email = ? AND
 		r.is_friend = 1
-		UNION ALL
+		INTERSECT
 		SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
 		r.is_friend, r.follows, r.created_at, r.updated_at
 		FROM Relationships AS r
 		JOIN Persons AS p2 ON r.person_2 = p2.id
 		JOIN Persons AS p1 ON r.person_1 = p1.id
 		WHERE p2.email = ? AND
-		r.is_friend = 1
-		`,
+		r.is_friend = 1`,
 		email1,
 		email2,
 	)
