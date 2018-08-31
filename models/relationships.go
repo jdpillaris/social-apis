@@ -62,14 +62,12 @@ func (r *Relationship) GetAllFriends(email string) ([]Relationship, error) {
 	rs := make([]Relationship, 0)
 	rows, err := GetDB().Query(
 		`SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
-		r.is_friends, r.follows, r.created_at, r.updated_at
+		r.is_friend, r.follows, r.created_at, r.updated_at
 		FROM Relationships AS r
-		JOIN Persons AS p2
-		JOIN Persons AS p1
-		ON r.person_2 = p2.id
-		ON r.person_1 = p1.id
+		JOIN Persons AS p2 ON r.person_2 = p2.id
+		JOIN Persons AS p1 ON r.person_1 = p1.id
 		WHERE p2.email = ? AND
-		r.is_friends = 1`,
+		r.is_friend = 1`,
 		email,
 	)
 	if err != nil {
@@ -110,12 +108,10 @@ func (r *Relationship) GetAllFollowers(email string) ([]Relationship, error) {
 	rs := make([]Relationship, 0)
 	rows, err := GetDB().Query(
 		`SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
-		r.is_friends, r.follows, r.created_at, r.updated_at
+		r.is_friend, r.follows, r.created_at, r.updated_at
 		FROM Relationships AS r
-		JOIN Persons AS p2
-		JOIN Persons AS p1
-		ON r.person_2 = p2.id
-		ON r.person_1 = p1.id
+		JOIN Persons AS p2 ON r.person_2 = p2.id
+		JOIN Persons AS p1 ON r.person_1 = p1.id
 		WHERE p2.email = ? AND
 		r.follows = 1`,
 		email,
@@ -159,24 +155,20 @@ func (r *Relationship) GetMutualFriends(email1, email2 string) ([]Relationship, 
 	rows, err := GetDB().Query(
 		`
 		SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
-		r.is_friends, r.follows, r.created_at, r.updated_at
+		r.is_friend, r.follows, r.created_at, r.updated_at
 		FROM Relationships AS r
-		JOIN Persons AS p2
-		JOIN Persons AS p1
-		ON r.person_2 = p2.id
-		ON r.person_1 = p1.id
+		JOIN Persons AS p2 ON r.person_2 = p2.id
+		JOIN Persons AS p1 ON r.person_1 = p1.id
 		WHERE p2.email = ? AND
-		r.is_friends = 1
+		r.is_friend = 1
 		UNION ALL
 		SELECT r.id, r.person_1, r.person_2, p1.email, p2.email,
-		r.is_friends, r.follows, r.created_at, r.updated_at
+		r.is_friend, r.follows, r.created_at, r.updated_at
 		FROM Relationships AS r
-		JOIN Persons AS p2
-		JOIN Persons AS p1
-		ON r.person_2 = p2.id
-		ON r.person_1 = p1.id
+		JOIN Persons AS p2 ON r.person_2 = p2.id
+		JOIN Persons AS p1 ON r.person_1 = p1.id
 		WHERE p2.email = ? AND
-		r.is_friends = 1
+		r.is_friend = 1
 		`,
 		email1,
 		email2,
